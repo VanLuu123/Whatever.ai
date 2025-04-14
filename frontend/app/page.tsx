@@ -1,0 +1,90 @@
+"use client";
+
+import Image from "next/image";
+import React from "react";
+import { useState } from "react";
+import cat from "../imgs/cat_img.png";
+import api from "./api";
+import { Message } from "./types";
+import ChatBox from "./components/ChatBox";
+import { FaChevronRight } from "react-icons/fa6";
+
+export default function Home() {
+  const [inputValue, setInputValue] = useState("");
+  const [chatmessages, setChatMessages] = useState<Message[]>([]);
+
+  const handleSubmit: React.FormEventHandler = async (e) => {
+    e.preventDefault();
+    setInputValue("");
+    const newMessages: Message[] = [
+      ...chatmessages,
+      {
+        text: inputValue,
+        sender: "user",
+      },
+    ];
+    try {
+      const response = await api.post("/recommend", {
+        chatmessages: newMessages,
+      });
+      const aiResponse = response.data.recommendation;
+      setChatMessages([
+        ...newMessages,
+        {
+          text: aiResponse,
+          sender: "ai",
+        },
+      ]);
+    } catch (error: any) {
+      console.error("Error Sending Request", error);
+    }
+  };
+  return (
+    <section className="flex flex-col min-h-screen text-black bg-white justify-center">
+      <div
+        className={
+          chatmessages.length === 0
+            ? "flex flex-col items-center"
+            : "flex-grow overflow-y-auto px-4 py-6"
+        }
+      >
+        <div className="max-w-2xl mx-auto w-full">
+          {chatmessages.length === 0 && (
+            <div className="flex justify-center items-center mb-6">
+              <Image src={cat} alt="I love coffee!" width={100} height={100} />
+              <h1 className="text-3xl font-bold mt-4">Coffee GPT</h1>
+            </div>
+          )}
+          <ChatBox messages={chatmessages} />
+        </div>
+      </div>
+
+      <div
+        className={`w-full ${
+          chatmessages.length === 0
+            ? "relative items-center"
+            : "border-t border-gray-200 bg-white px-4 py-3 sticky bottom-0"
+        }`}
+      >
+        <form
+          className="max-w-2xl mx-auto flex items-center w-full"
+          onSubmit={handleSubmit}
+        >
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            className="w-full h-12 px-6 rounded-full border border-gray-300 focus:outline-none bg-white text-base text-gray-700"
+            placeholder="Ask me anything..."
+          />
+          <button
+            type="submit"
+            className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold p-3 rounded-full focus:outline-none"
+          >
+            <FaChevronRight className="text-white text-lg" />
+          </button>
+        </form>
+      </div>
+    </section>
+  );
+}
