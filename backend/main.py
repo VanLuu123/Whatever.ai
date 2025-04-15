@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain_logic import get_cafe_recommendation
 from pydantic import BaseModel
 from typing import List, Literal
+from model import ChatMessage
 
 class Message(BaseModel):
     text:str

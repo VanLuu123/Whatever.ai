@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import React from "react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import cat from "../imgs/cat_img.png";
 import api from "./api";
 import { Message } from "./types";
@@ -12,6 +12,14 @@ import { FaChevronRight } from "react-icons/fa6";
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [chatmessages, setChatMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const shouldClear = localStorage.getItem("clear_chat");
+    if (shouldClear === "true") {
+      setChatMessages([]);
+      localStorage.removeItem("clear_chat");
+    }
+  }, []);
 
   const handleSubmit: React.FormEventHandler = async (e) => {
     e.preventDefault();

@@ -1,8 +1,15 @@
+"use client";
+
 import React from "react";
 import Image from "next/image";
 import cat from "/imgs/cat_img.png";
 import { GoSidebarCollapse } from "react-icons/go";
 import { BiMessageAdd } from "react-icons/bi";
+
+const handleClearChat = () => {
+  localStorage.setItem("clear_chat", "true");
+  window.location.reload();
+};
 
 const Navbar = () => {
   return (
@@ -21,7 +28,11 @@ const Navbar = () => {
         <h1 className="text-xl font-bold text-gray-800">Coffee GPT</h1>
       </div>
       <div className="hidden md:flex items-center space-x-4">
-        <button className="text-gray-700 hover:text-black transition">
+        <button
+          onClick={handleClearChat}
+          className="text-gray-700 hover:text-black transition"
+          aria-label="New Chat"
+        >
           <BiMessageAdd size={20} />
         </button>
       </div>
