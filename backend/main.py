@@ -18,7 +18,7 @@ app = FastAPI()
 origins = [
     "http://localhost:3000"
 ]
-
+#only allows this specified URL's to make requests to backend
 app.add_middleware(
     CORSMiddleware,
     allow_origins = origins,
@@ -35,6 +35,6 @@ async def recommend(request_body: ChatRequest):
     ]
     recommendation = get_cafe_recommendation(chat_history)
     return {"recommendation": recommendation}
-
+#Initializes uvicorn to run on localhost:8000 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
