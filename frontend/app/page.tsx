@@ -14,6 +14,7 @@ export default function Home() {
   const [chatmessages, setChatMessages] = useState<Message[]>([]);
 
   useEffect(() => {
+    // temp makes new chat by reloading page (will change later)
     const shouldClear = localStorage.getItem("clear_chat");
     if (shouldClear === "true") {
       setChatMessages([]);
@@ -30,11 +31,13 @@ export default function Home() {
       sender: "user",
     };
 
+    // dummy loading message for AI
     const loadingMessage: Message = {
       text: "__loading__",
       sender: "ai",
     };
 
+    // Add user's message and a temporary AI "typing" message to simulate loading
     const newMessages: Message[] = [
       ...chatmessages,
       { text: inputValue, sender: "user" },
@@ -43,6 +46,7 @@ export default function Home() {
     setChatMessages(newMessages);
     setInputValue("");
 
+    // API POST req to send User Query to Backend
     try {
       const response = await api.post("/recommend", {
         chatmessages: [...chatmessages, userMessage],

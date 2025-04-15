@@ -1,5 +1,5 @@
 import React from "react";
-
+// Bounce loading animation
 const BounceLoading = () => {
   return (
     <div className="flex gap-1 items-center bg-gray-200 rounded-lg">

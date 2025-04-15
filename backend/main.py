@@ -26,7 +26,7 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers =["*"],
 )
-
+# POST endpoint that extracts full chat histroy for LangChain Prompt formatting
 @app.post("/recommend")
 async def recommend(request_body: ChatRequest):
     chat_history = [
