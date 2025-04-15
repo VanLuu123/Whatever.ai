@@ -29,13 +29,11 @@ app.add_middleware(
 
 @app.post("/recommend")
 async def recommend(request_body: ChatRequest):
-    last_user_message = ""
-    for msg in reversed(request_body.chatmessages):
-        if msg.sender == "user":
-            last_user_message = msg.text
-            break
-
-    recommendation = get_cafe_recommendation(last_user_message)
+    chat_history = [
+        (msg.sender, msg.text)
+        for msg in request_body.chatmessages
+    ]
+    recommendation = get_cafe_recommendation(chat_history)
     return {"recommendation": recommendation}
 
 if __name__ == "__main__":

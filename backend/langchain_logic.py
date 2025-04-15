@@ -47,11 +47,9 @@ You are a helpful, location-aware café guide — friendly, efficient, and focus
 def get_cafe_recommendation(user_query):
     prompt_template = ChatPromptTemplate.from_messages([
         ("system", System_Message),
-        ("user", "{user_query}")
+        *user_query #passes an array of all chat messages 
     ])
-    messages = prompt_template.format_messages(user_query=user_query)
-    response = llm.invoke(messages)
-
+    response = llm.invoke(prompt_template.format_messages())
     return response.content
 
 if __name__ == "__main__":

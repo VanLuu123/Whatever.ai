@@ -31,17 +31,21 @@ export default function Home() {
     };
 
     const loadingMessage: Message = {
-      text: "__loading__", // magic placeholder
+      text: "__loading__",
       sender: "ai",
     };
 
-    const newMessages = [...chatmessages, userMessage, loadingMessage];
+    const newMessages: Message[] = [
+      ...chatmessages,
+      { text: inputValue, sender: "user" },
+      { text: "__loading__", sender: "ai" },
+    ];
     setChatMessages(newMessages);
     setInputValue("");
 
     try {
       const response = await api.post("/recommend", {
-        chatmessages: [...chatmessages, userMessage], // don’t send fake loading
+        chatmessages: [...chatmessages, userMessage],
       });
 
       const aiResponse: Message = {
@@ -49,11 +53,9 @@ export default function Home() {
         sender: "ai",
       };
 
-      // Replace loading message with actual AI response
       setChatMessages([...chatmessages, userMessage, aiResponse]);
     } catch (error: any) {
       console.error("Error Sending Request", error);
-      // Remove loading and show error message
       setChatMessages([
         ...chatmessages,
         userMessage,
