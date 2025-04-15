@@ -23,30 +23,45 @@ export default function Home() {
 
   const handleSubmit: React.FormEventHandler = async (e) => {
     e.preventDefault();
+    if (!inputValue.trim()) return;
+
+    const userMessage: Message = {
+      text: inputValue,
+      sender: "user",
+    };
+
+    const loadingMessage: Message = {
+      text: "__loading__", // magic placeholder
+      sender: "ai",
+    };
+
+    const newMessages = [...chatmessages, userMessage, loadingMessage];
+    setChatMessages(newMessages);
     setInputValue("");
-    const newMessages: Message[] = [
-      ...chatmessages,
-      {
-        text: inputValue,
-        sender: "user",
-      },
-    ];
+
     try {
       const response = await api.post("/recommend", {
-        chatmessages: newMessages,
+        chatmessages: [...chatmessages, userMessage], // don’t send fake loading
       });
-      const aiResponse = response.data.recommendation;
-      setChatMessages([
-        ...newMessages,
-        {
-          text: aiResponse,
-          sender: "ai",
-        },
-      ]);
+
+      const aiResponse: Message = {
+        text: response.data.recommendation,
+        sender: "ai",
+      };
+
+      // Replace loading message with actual AI response
+      setChatMessages([...chatmessages, userMessage, aiResponse]);
     } catch (error: any) {
       console.error("Error Sending Request", error);
+      // Remove loading and show error message
+      setChatMessages([
+        ...chatmessages,
+        userMessage,
+        { text: "Sorry, something went wrong. 😕", sender: "ai" },
+      ]);
     }
   };
+
   return (
     <section className="flex flex-col min-h-screen text-black bg-white justify-center">
       <div

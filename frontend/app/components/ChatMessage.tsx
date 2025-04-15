@@ -1,7 +1,10 @@
 import { Message } from "../types";
 import React from "react";
+import BounceLoading from "./BounceLoading";
 
 const ChatMessage: React.FC<Message> = ({ text, sender }) => {
+  const isLoading = text === "__loading__";
+
   return (
     <div
       className={`flex ${sender === "user" ? "justify-end" : "justify-start"}`}
@@ -13,7 +16,7 @@ const ChatMessage: React.FC<Message> = ({ text, sender }) => {
             : "bg-gray-200 text-black"
         }`}
       >
-        {text}
+        {isLoading ? <BounceLoading /> : text}
       </div>
     </div>
   );
