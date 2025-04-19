@@ -6,3 +6,5 @@ langchain-community
 pydantic
 openai
 sqlmodel
+requests
+sse-starlette

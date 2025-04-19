@@ -4,7 +4,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain_logic import get_cafe_recommendation
 from pydantic import BaseModel
 from typing import List, Literal
-from model import ChatMessage
+from google_places import get_place_details
+from sse_starlette.sse import EventSourceResponse
 
 class Message(BaseModel):
     text:str
@@ -28,13 +29,14 @@ app.add_middleware(
 )
 # POST endpoint that extracts full chat histroy for LangChain Prompt formatting
 @app.post("/recommend")
-async def recommend(request_body: ChatRequest):
+def recommend(request_body: ChatRequest = "hi"):
     chat_history = [
         (msg.sender, msg.text)
         for msg in request_body.chatmessages
     ]
-    recommendation = get_cafe_recommendation(chat_history)
-    return {"recommendation": recommendation}
-#Initializes uvicorn to run on localhost:8000 
+    return EventSourceResponse(get_cafe_recommendation(chat_history), media_type="text/event-stream")
+    #place_data = get_place_details(recommendation)
+
+#Initializes uvicorn to run backend on localhost:8000 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)

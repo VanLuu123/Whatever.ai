@@ -1,17 +1,20 @@
 "use client";
 
 import Image from "next/image";
-import React from "react";
+import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import cat from "../imgs/cat_img.png";
 import api from "./api";
 import { Message } from "./types";
 import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
+import { fetchEventSource } from "@microsoft/fetch-event-source";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
   const [chatmessages, setChatMessages] = useState<Message[]>([]);
+  const [isStreaming, setIsStreaming] = useState(false);
+  const currentAiMessage = useRef("");
 
   useEffect(() => {
     // temp makes new chat by reloading page (will change later)
@@ -24,7 +27,7 @@ export default function Home() {
 
   const handleSubmit: React.FormEventHandler = async (e) => {
     e.preventDefault();
-    if (!inputValue.trim()) return;
+    if (!inputValue.trim() || isStreaming) return;
 
     const userMessage: Message = {
       text: inputValue,
@@ -45,26 +48,78 @@ export default function Home() {
     ];
     setChatMessages(newMessages);
     setInputValue("");
+    setIsStreaming(true);
+    currentAiMessage.current = "";
 
     // API POST req to send User Query to Backend
     try {
-      const response = await api.post("/recommend", {
-        chatmessages: [...chatmessages, userMessage],
+      await fetchEventSource("http://localhost:8000/recommend", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ chatmessages: [...chatmessages, userMessage] }),
+        // checks if the SSE connection is opened and connected
+        onopen: async (response) => {
+          if (response.ok) {
+            console.log("Server Sent Event Connection Established");
+            return;
+          }
+          console.log("Server Sent Event Connection Error", response.status);
+          setIsStreaming(false);
+          throw new Error(
+            `Server Sent Event Connection Error, status ${response.status}`
+          );
+        },
+        // returns the chunks of data as it comes in and updates the chat messages
+        onmessage(event) {
+          if (event.data === "[DONE]") {
+            setIsStreaming(false);
+            return;
+          }
+          try {
+            currentAiMessage.current += event.data;
+            setChatMessages((prev) => {
+              const last = prev[prev.length - 1];
+
+              if (last?.sender === "user") {
+                return [
+                  ...prev,
+                  { text: currentAiMessage.current, sender: "ai" },
+                ];
+              } else if (last?.sender === "ai") {
+                return [
+                  ...prev.slice(0, -1),
+                  { ...last, text: currentAiMessage.current },
+                ];
+              }
+
+              return prev; // fallback
+            });
+          } catch (error) {
+            console.log("Fetch on message error", error);
+          }
+        },
+        onerror(error) {
+          console.log("Server Sent Event Error", error);
+          setIsStreaming(false);
+          setChatMessages((prev) => [
+            ...prev,
+            {
+              text: "Sorry, something went wrong with the AI. 😕",
+              sender: "ai",
+            },
+          ]);
+          throw error;
+        },
+        onclose() {
+          console.log("Server Sent Event Closed.");
+          setIsStreaming(false);
+        },
       });
-
-      const aiResponse: Message = {
-        text: response.data.recommendation,
-        sender: "ai",
-      };
-
-      setChatMessages([...chatmessages, userMessage, aiResponse]);
-    } catch (error: any) {
-      console.error("Error Sending Request", error);
-      setChatMessages([
-        ...chatmessages,
-        userMessage,
-        { text: "Sorry, something went wrong. 😕", sender: "ai" },
-      ]);
+    } catch (error) {
+      console.error("Error setting up SSE:", error);
+      setIsStreaming(false);
     }
   };
 
