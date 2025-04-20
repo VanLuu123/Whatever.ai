@@ -9,21 +9,13 @@ import { Message } from "./types";
 import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
+import { useChat } from "./context/ChatContext";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
-  const [chatmessages, setChatMessages] = useState<Message[]>([]);
-  const [isStreaming, setIsStreaming] = useState(false);
+  const { chatMessages, setChatMessages, isStreaming, setIsStreaming } =
+    useChat();
   const currentAiMessage = useRef("");
-
-  useEffect(() => {
-    // temp makes new chat by reloading page (will change later)
-    const shouldClear = localStorage.getItem("clear_chat");
-    if (shouldClear === "true") {
-      setChatMessages([]);
-      localStorage.removeItem("clear_chat");
-    }
-  }, []);
 
   const handleSubmit: React.FormEventHandler = async (e) => {
     e.preventDefault();
@@ -42,7 +34,7 @@ export default function Home() {
 
     // Add user's message and a temporary AI "typing" message to simulate loading
     const newMessages: Message[] = [
-      ...chatmessages,
+      ...chatMessages,
       { text: inputValue, sender: "user" },
       { text: "__loading__", sender: "ai" },
     ];
@@ -58,7 +50,7 @@ export default function Home() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ chatmessages: [...chatmessages, userMessage] }),
+        body: JSON.stringify({ chatmessages: [...chatMessages, userMessage] }),
         // checks if the SSE connection is opened and connected
         onopen: async (response) => {
           if (response.ok) {
@@ -71,7 +63,7 @@ export default function Home() {
             `Server Sent Event Connection Error, status ${response.status}`
           );
         },
-        // returns the chunks of data as it comes in and updates the chat messages
+        // accepts the stream of events from backend and appends onto the AI message until DONE appears
         onmessage(event) {
           if (event.data === "[DONE]") {
             setIsStreaming(false);
@@ -94,7 +86,7 @@ export default function Home() {
                 ];
               }
 
-              return prev; // fallback
+              return prev;
             });
           } catch (error) {
             console.log("Fetch on message error", error);
@@ -127,46 +119,49 @@ export default function Home() {
     <section className="flex flex-col min-h-screen text-black bg-white justify-center">
       <div
         className={
-          chatmessages.length === 0
+          chatMessages.length === 0
             ? "flex flex-col items-center"
             : "flex-grow overflow-y-auto px-4 py-6"
         }
       >
         <div className="max-w-2xl mx-auto w-full">
-          {chatmessages.length === 0 && (
+          {chatMessages.length === 0 && (
             <div className="flex justify-center items-center mb-6">
               <Image src={cat} alt="I love coffee!" width={100} height={100} />
               <h1 className="text-3xl font-bold mt-4">Coffee GPT</h1>
             </div>
           )}
-          <ChatBox messages={chatmessages} />
+          <ChatBox messages={chatMessages} />
         </div>
       </div>
 
       <div
         className={`w-full ${
-          chatmessages.length === 0
+          chatMessages.length === 0
             ? "relative items-center"
-            : "border-t border-gray-200 bg-white px-4 py-3 sticky bottom-0"
+            : "border-t border-gray-200 bg-white px-4 py-3 sticky bottom-0 shadow-sm"
         }`}
       >
         <form
           className="max-w-2xl mx-auto flex items-center w-full"
           onSubmit={handleSubmit}
         >
-          <input
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-            className="w-full h-12 px-6 rounded-full border border-gray-300 focus:outline-none bg-white text-base text-gray-700"
-            placeholder="Ask me anything..."
-          />
-          <button
-            type="submit"
-            className="ml-2 bg-blue-500 hover:bg-blue-700 text-white font-bold p-3 rounded-full focus:outline-none"
-          >
-            <FaChevronRight className="text-white text-lg" />
-          </button>
+          <div className="relative w-full">
+            <input
+              type="text"
+              value={inputValue}
+              onChange={(e) => setInputValue(e.target.value)}
+              className="w-full h-12 px-6 pr-12 rounded-full border border-gray-300 focus:outline-none bg-gray-50 text-base text-gray-700 shadow-sm"
+              placeholder="Ask me anything..."
+            />
+            <button
+              type="submit"
+              className="absolute right-1 top-1 bg-gray-600 hover:bg-gray-500 text-white p-2.5 rounded-full focus:outline-none focus:ring-2 focus:ring-white transition-colors duration-200"
+              aria-label="submit"
+            >
+              <FaChevronRight className="text-white text-lg" />
+            </button>
+          </div>
         </form>
       </div>
     </section>

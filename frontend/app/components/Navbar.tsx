@@ -1,17 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useContext } from "react";
 import Image from "next/image";
 import cat from "/imgs/cat_img.png";
 import { GoSidebarCollapse } from "react-icons/go";
 import { BiMessageAdd } from "react-icons/bi";
-
-const handleClearChat = () => {
-  localStorage.setItem("clear_chat", "true");
-  window.location.reload();
-};
+import { useChat } from "../context/ChatContext";
 
 const Navbar = () => {
+  const { clearChat } = useChat();
   return (
     <nav className="fixed w-full px-6 py-4 flex justify-between">
       <div className="flex items-center gap-2">
@@ -29,7 +26,7 @@ const Navbar = () => {
       </div>
       <div className="hidden md:flex items-center space-x-4">
         <button
-          onClick={handleClearChat}
+          onClick={clearChat}
           className="text-gray-700 hover:text-black transition"
           aria-label="New Chat"
         >
