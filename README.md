@@ -27,9 +27,11 @@ Create a `.env` file in the root directory with:
 
 ```env
 OPENROUTER_API_KEY=your_openrouter_api_key
+URL_DATABASE=postgresql+asyncpg://your_username:your_password@localhost:5432/your_database_name
 ```
 
 > Replace `your_openrouter_api_key` with your actual API key from [OpenRouter](https://openrouter.ai).
+> Replace `postgresql+asyncpg://your_username:your_password@localhost:5432/your_database_name` with your actual key from Postgresql
 
 ---
 
