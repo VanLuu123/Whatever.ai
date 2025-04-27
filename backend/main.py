@@ -6,15 +6,23 @@ from pydantic import BaseModel
 from typing import List, Literal
 from google_places import get_place_details
 from sse_starlette.sse import EventSourceResponse
-
-class Message(BaseModel):
-    text:str
-    sender: Literal["user", "ai"]
+from database import engine 
+from database import init_db
+from contextlib import asynccontextmanager
+from routes.chats import chats_router
+from models import Message
     
 class ChatRequest(BaseModel):
     chatmessages: List[Message]
-
-app = FastAPI()
+    
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    await init_db() #starts database on startup
+    yield
+    
+    pass
+    
+app = FastAPI(lifespan=lifespan)
 
 origins = [
     "http://localhost:3000"
@@ -27,15 +35,20 @@ app.add_middleware(
     allow_methods = ["*"],
     allow_headers =["*"],
 )
+
+app.include_router(chats_router)
+
 # POST endpoint that extracts full chat histroy for LangChain Prompt formatting
 @app.post("/recommend")
-def recommend(request_body: ChatRequest = "hi"):
+async def recommend(request_body: ChatRequest):
     chat_history = [
         (msg.sender, msg.text)
         for msg in request_body.chatmessages
     ]
     return EventSourceResponse(get_cafe_recommendation(chat_history), media_type="text/event-stream")
     #place_data = get_place_details(recommendation)
+    
+    
 
 #Initializes uvicorn to run backend on localhost:8000 
 if __name__ == "__main__":

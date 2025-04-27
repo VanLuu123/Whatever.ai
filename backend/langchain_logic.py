@@ -99,6 +99,7 @@ async def get_cafe_recommendation(user_query):
     response = llm.astream(prompt_template.format_messages())
     async for chunk in response:
         yield chunk.content
+    yield "[DONE]"
 
 if __name__ == "__main__":
     user_input = "I'm looking for a good cafe in Lemon Grove, California."

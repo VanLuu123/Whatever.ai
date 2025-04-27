@@ -10,3 +10,4 @@ requests
 sse-starlette
 psycopg[binary]
 asyncpg
+uuid

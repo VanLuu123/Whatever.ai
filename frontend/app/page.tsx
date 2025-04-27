@@ -13,9 +13,23 @@ import { useChat } from "./context/ChatContext";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
-  const { chatMessages, setChatMessages, isStreaming, setIsStreaming } =
-    useChat();
+  const ref = useRef<HTMLDivElement>(null);
+  const {
+    chatMessages,
+    setChatMessages,
+    isStreaming,
+    setIsStreaming,
+    sessionId,
+    setSessionId,
+  } = useChat();
   const currentAiMessage = useRef("");
+
+  //auto scrolling feature
+  useEffect(() => {
+    if (ref.current) {
+      ref.current.scrollIntoView();
+    }
+  }, [chatMessages]);
 
   const handleSubmit: React.FormEventHandler = async (e) => {
     e.preventDefault();
@@ -26,11 +40,22 @@ export default function Home() {
       sender: "user",
     };
 
-    // dummy loading message for AI
-    const loadingMessage: Message = {
-      text: "__loading__",
-      sender: "ai",
-    };
+    try {
+      await fetch("http://localhost:8000/chats/", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: inputValue,
+          sender: "user",
+          session_id: sessionId,
+        }),
+      });
+      console.log("Saving User Message");
+    } catch (error) {
+      console.log("Error saving user input", error);
+    }
 
     // Add user's message and a temporary AI "typing" message to simulate loading
     const newMessages: Message[] = [
@@ -63,9 +88,25 @@ export default function Home() {
             `Server Sent Event Connection Error, status ${response.status}`
           );
         },
-        // accepts the stream of events from backend and appends onto the AI message until DONE appears
-        onmessage(event) {
+        // accepts the stream of events from backend and appends onto the AI message
+        onmessage: async (event) => {
           if (event.data === "[DONE]") {
+            try {
+              await fetch("http://localhost:8000/chats/", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  text: currentAiMessage.current,
+                  sender: "ai",
+                  session_id: sessionId,
+                }),
+              });
+              console.log("Saving AI Message");
+            } catch (error) {
+              console.log("Error Saving AI Message", error);
+            }
             setIsStreaming(false);
             return;
           }
@@ -74,19 +115,17 @@ export default function Home() {
             setChatMessages((prev) => {
               const last = prev[prev.length - 1];
 
-              if (last?.sender === "user") {
-                return [
-                  ...prev,
-                  { text: currentAiMessage.current, sender: "ai" },
-                ];
-              } else if (last?.sender === "ai") {
+              if (last.sender === "ai") {
                 return [
                   ...prev.slice(0, -1),
                   { ...last, text: currentAiMessage.current },
                 ];
+              } else {
+                return [
+                  ...prev,
+                  { text: currentAiMessage.current, sender: "ai" },
+                ];
               }
-
-              return prev;
             });
           } catch (error) {
             console.log("Fetch on message error", error);
@@ -112,6 +151,8 @@ export default function Home() {
     } catch (error) {
       console.error("Error setting up SSE:", error);
       setIsStreaming(false);
+    } finally {
+      setIsStreaming(false); // Ensure streaming state is reset incase backend fails
     }
   };
 
@@ -153,14 +194,17 @@ export default function Home() {
               onChange={(e) => setInputValue(e.target.value)}
               className="w-full h-12 px-6 pr-12 rounded-full border border-gray-300 focus:outline-none bg-gray-50 text-base text-gray-700 shadow-sm"
               placeholder="Ask me anything..."
+              disabled={isStreaming}
             />
             <button
               type="submit"
               className="absolute right-1 top-1 bg-gray-600 hover:bg-gray-500 text-white p-2.5 rounded-full focus:outline-none focus:ring-2 focus:ring-white transition-colors duration-200"
               aria-label="submit"
+              disabled={isStreaming}
             >
               <FaChevronRight className="text-white text-lg" />
             </button>
+            <div ref={ref}></div>
           </div>
         </form>
       </div>
