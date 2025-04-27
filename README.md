@@ -79,6 +79,11 @@ The frontend runs on `http://localhost:3000`.
 - python-dotenv
 - pydantic
 - openai
+- asyncpg
+- uuid
+- requests
+- sse-starlette
+- sqlmodel
 
 ### Frontend
 
