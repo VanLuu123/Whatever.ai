@@ -21,7 +21,24 @@ git clone https://github.com/yourusername/coffee-gpt.git
 cd coffee-gpt
 ```
 
-### 2. Set Up Environment Variables
+### 2. Database Setup (PostgreSQL)
+
+Download and install PostgreSQL from postgresql.org
+Create a new local database:
+
+bash# Access PostgreSQL command line
+psql -U postgres
+
+# Create a new database
+CREATE DATABASE your_database_name;
+
+# Create a user (optional)
+CREATE USER your_username WITH PASSWORD 'your_password';
+
+# Grant privileges
+GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_username;
+
+### 3. Set Up Environment Variables
 
 Create a `.env` file in the root directory with:
 
