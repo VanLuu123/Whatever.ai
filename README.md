@@ -23,20 +23,20 @@ cd coffee-gpt
 
 ### 2. Database Setup (PostgreSQL)
 
-Download and install PostgreSQL from postgresql.org
-Create a new local database:
+> Download and install PostgreSQL from postgresql.org
+> Create a new local database:
 
-bash# Access PostgreSQL command line
+```bash
 psql -U postgres
+```
+Create a new database
+`CREATE DATABASE your_database_name;`
 
-# Create a new database
-CREATE DATABASE your_database_name;
+Create a user (optional)
+`CREATE USER your_username WITH PASSWORD 'your_password';`
 
-# Create a user (optional)
-CREATE USER your_username WITH PASSWORD 'your_password';
-
-# Grant privileges
-GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_username;
+Grant privileges
+`GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_username;`
 
 ### 3. Set Up Environment Variables
 
