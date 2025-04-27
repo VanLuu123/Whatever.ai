@@ -101,6 +101,7 @@ The frontend runs on `http://localhost:3000`.
 - requests
 - sse-starlette
 - sqlmodel
+- Postgresql
 
 ### Frontend
 
