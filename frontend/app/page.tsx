@@ -10,6 +10,7 @@ import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useChat } from "./context/ChatContext";
+import { config } from "./config";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
@@ -41,7 +42,7 @@ export default function Home() {
     };
 
     try {
-      await fetch("http://localhost:8000/chats/", {
+      await fetch("${config.backendUrl}/chats/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -70,7 +71,7 @@ export default function Home() {
 
     // API POST req to send User Query to Backend
     try {
-      await fetchEventSource("http://localhost:8000/recommend", {
+      await fetchEventSource("${config.backendUrl}/recommend", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -92,7 +93,7 @@ export default function Home() {
         onmessage: async (event) => {
           if (event.data === "[DONE]") {
             try {
-              await fetch("http://localhost:8000/chats/", {
+              await fetch("${config.backendUrl}/chats/", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

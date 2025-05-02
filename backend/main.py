@@ -1,4 +1,4 @@
-import uvicorn
+import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_logic import get_cafe_recommendation
@@ -24,8 +24,10 @@ async def lifespan(app: FastAPI):
     
 app = FastAPI(lifespan=lifespan)
 
+frontend_url = os.environ.get("FRONTEND_URL", "http://localhost:3000")
+
 origins = [
-    "http://localhost:3000"
+    frontend_url
 ]
 #only allows this specified URL's to make requests to backend
 app.add_middleware(
@@ -52,4 +54,6 @@ async def recommend(request_body: ChatRequest):
 
 #Initializes uvicorn to run backend on localhost:8000 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=port)
