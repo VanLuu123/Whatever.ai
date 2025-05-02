@@ -186,6 +186,7 @@ export default function Home() {
         <form
           className="max-w-2xl mx-auto flex items-center w-full"
           onSubmit={handleSubmit}
+          id="chatbox"
         >
           <div className="relative w-full">
             <input

@@ -15,13 +15,15 @@ const Navbar = () => {
         <button className="text-gray-800 hover:text-black transition">
           <GoSidebarCollapse size={20} />
         </button>
-        <Image
-          src={cat}
-          alt="cat"
-          width={50}
-          height={50}
-          className="rounded-full"
-        />
+        <a onClick={clearChat} aria-label="refresh page">
+          <Image
+            src={cat}
+            alt="cat"
+            width={50}
+            height={50}
+            className="rounded-full hover:opacity-80 transition-opacity cursor-pointer"
+          />
+        </a>
         <h1 className="text-xl font-bold text-gray-800">Coffee GPT</h1>
       </div>
       <div className="hidden md:flex items-center space-x-4">
