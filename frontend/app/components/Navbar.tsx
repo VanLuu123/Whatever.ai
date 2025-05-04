@@ -24,7 +24,7 @@ const Navbar = () => {
             className="rounded-full hover:opacity-80 transition-opacity cursor-pointer"
           />
         </a>
-        <h1 className="text-xl font-bold text-gray-800">Coffee GPT</h1>
+        <h1 className="text-xl font-bold text-gray-800">Whatever.AI</h1>
       </div>
       <div className="hidden md:flex items-center space-x-4">
         <button

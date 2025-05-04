@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Cafe AI",
-  description: "An AI bot that recommends cafes",
+  title: "Whatever.AI",
+  description: "An AI bot that recommends food places near you!",
 };
 
 export const viewport = {
