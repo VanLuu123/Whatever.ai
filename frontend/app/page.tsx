@@ -40,7 +40,7 @@ export default function Home() {
     };
 
     try {
-      await fetch(`${config}/chats/`, {
+      await fetch(`${config.backendUrl}/chats/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -69,7 +69,7 @@ export default function Home() {
 
     // API POST req to send User Query to Backend
     try {
-      await fetchEventSource(`${config}/recommend/`, {
+      await fetchEventSource(`${config.backendUrl}/recommend/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -91,7 +91,7 @@ export default function Home() {
         onmessage: async (event) => {
           if (event.data === "[DONE]") {
             try {
-              await fetch(`${config}/chats/`, {
+              await fetch(`${config.backendUrl}/chats/`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
