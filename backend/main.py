@@ -1,5 +1,4 @@
 import os
-import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_logic import get_cafe_recommendation
@@ -54,4 +53,5 @@ async def recommend(request_body: ChatRequest):
 
 #Initializes uvicorn to run backend on localhost:8000 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8000))
+    import uvicorn
+    uvicorn.run(app, host="0.0.0.0", port=8000)
