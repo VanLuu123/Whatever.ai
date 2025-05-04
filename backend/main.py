@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "https://cafe-gpt.vercel.app/"
+    "https://cafe-gpt.vercel.app"
 ]
 #only allows this specified URL's to make requests to backend
 app.add_middleware(
