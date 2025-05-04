@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "https://cafe-gpt.vercel.app"
+    "https://whatever-ai-gamma.vercel.app/"
 ]
 #only allows this specified URL's to make requests to backend
 app.add_middleware(
@@ -47,7 +47,6 @@ async def recommend(request_body: ChatRequest):
         for msg in request_body.chatmessages
     ]
     return EventSourceResponse(get_cafe_recommendation(chat_history), media_type="text/event-stream")
-    #place_data = get_place_details(recommendation)
 
 @app.get("/")
 def root():
