@@ -25,7 +25,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "https://whatever-ai-gamma.vercel.app/"
+    "https://whatever-ai-gamma.vercel.app"
 ]
 #only allows this specified URL's to make requests to backend
 app.add_middleware(
