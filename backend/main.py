@@ -48,6 +48,10 @@ async def recommend(request_body: ChatRequest):
     ]
     return EventSourceResponse(get_cafe_recommendation(chat_history), media_type="text/event-stream")
     #place_data = get_place_details(recommendation)
+
+@app.get("/")
+def root():
+    return{"status": "Backend live"}
     
     
 
