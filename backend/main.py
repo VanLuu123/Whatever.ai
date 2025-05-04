@@ -4,7 +4,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from langchain_logic import get_cafe_recommendation
 from pydantic import BaseModel
 from typing import List, Literal
-from google_places import get_place_details
 from sse_starlette.sse import EventSourceResponse
 from database import engine 
 from database import init_db
