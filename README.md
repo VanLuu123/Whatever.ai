@@ -21,15 +21,34 @@ git clone https://github.com/yourusername/coffee-gpt.git
 cd coffee-gpt
 ```
 
-### 2. Set Up Environment Variables
+### 2. Database Setup (PostgreSQL)
+
+> Download and install PostgreSQL from postgresql.org
+> Create a new local database:
+
+```bash
+psql -U postgres
+```
+Create a new database
+`CREATE DATABASE your_database_name;`
+
+Create a user (optional)
+`CREATE USER your_username WITH PASSWORD 'your_password';`
+
+Grant privileges
+`GRANT ALL PRIVILEGES ON DATABASE your_database_name TO your_username;`
+
+### 3. Set Up Environment Variables
 
 Create a `.env` file in the root directory with:
 
 ```env
 OPENROUTER_API_KEY=your_openrouter_api_key
+URL_DATABASE=postgresql+asyncpg://your_username:your_password@localhost:5432/your_database_name
 ```
 
 > Replace `your_openrouter_api_key` with your actual API key from [OpenRouter](https://openrouter.ai).
+> Replace `postgresql+asyncpg://your_username:your_password@localhost:5432/your_database_name` with your actual key from Postgresql
 
 ---
 
@@ -77,6 +96,12 @@ The frontend runs on `http://localhost:3000`.
 - python-dotenv
 - pydantic
 - openai
+- asyncpg
+- uuid
+- requests
+- sse-starlette
+- sqlmodel
+- Postgresql
 
 ### Frontend
 

@@ -1,3 +1,4 @@
+import os
 import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -11,6 +12,7 @@ from database import init_db
 from contextlib import asynccontextmanager
 from routes.chats import chats_router
 from models import Message
+
     
 class ChatRequest(BaseModel):
     chatmessages: List[Message]
@@ -52,4 +54,4 @@ async def recommend(request_body: ChatRequest):
 
 #Initializes uvicorn to run backend on localhost:8000 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    port = int(os.environ.get("PORT", 8000))
