@@ -26,7 +26,7 @@ async def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 
 origins = [
-    "http://localhost:3000"
+    "https://cafe-gpt.vercel.app/"
 ]
 #only allows this specified URL's to make requests to backend
 app.add_middleware(
@@ -51,7 +51,7 @@ async def recommend(request_body: ChatRequest):
     
     
 
-#Initializes uvicorn to run backend on localhost:8000 
+#Initializes uvicorn to run backend on localhost:10000 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=10000)
