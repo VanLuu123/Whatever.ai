@@ -167,8 +167,8 @@ export default function Home() {
         <div className="max-w-2xl mx-auto w-full">
           {chatMessages.length === 0 && (
             <div className="flex justify-center items-center mb-6">
-              <Image src={cat} alt="I love coffee!" width={100} height={100} />
-              <h1 className="text-3xl font-bold mt-4">Coffee GPT</h1>
+              <Image src={cat} alt="I love food!" width={100} height={100} />
+              <h1 className="text-3xl font-bold mt-4">Whatever.AI</h1>
             </div>
           )}
           <ChatBox messages={chatMessages} />
