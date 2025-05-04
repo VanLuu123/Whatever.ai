@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext } from "react";
+import React from "react";
 import Image from "next/image";
 import cat from "/imgs/cat_img.png";
 import { GoSidebarCollapse } from "react-icons/go";

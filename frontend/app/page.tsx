@@ -4,7 +4,6 @@ import Image from "next/image";
 import React, { useRef } from "react";
 import { useState, useEffect } from "react";
 import cat from "../imgs/cat_img.png";
-import api from "./api";
 import { Message } from "./types";
 import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
@@ -20,7 +19,6 @@ export default function Home() {
     isStreaming,
     setIsStreaming,
     sessionId,
-    setSessionId,
   } = useChat();
   const currentAiMessage = useRef("");
 

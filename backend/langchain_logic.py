@@ -7,7 +7,7 @@ load_dotenv()
 api_key = os.environ.get("OPENROUTER_API_KEY")
 
 llm = ChatOpenAI(
-    model_name="mistralai/mixtral-8x7b-instruct",
+    model_name="mistralai/mistral-nemo:free",
     openai_api_key=api_key,
     openai_api_base="https://openrouter.ai/api/v1",
     streaming=True,
