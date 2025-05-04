@@ -11,3 +11,4 @@ sse-starlette
 psycopg[binary]
 asyncpg
 uuid
+psycopg2-binary
