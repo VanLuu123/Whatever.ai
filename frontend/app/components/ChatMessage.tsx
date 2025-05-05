@@ -1,94 +1,106 @@
-import { Message } from "../types";
 import React from "react";
-import BounceLoading from "./BounceLoading";
 
-const ChatMessage: React.FC<Message> = ({ text, sender }) => {
-  const isLoading = text === "__loading__";
+interface ChatMessageProps {
+  text: string;
+  sender: "user" | "ai";
+}
 
-  const formatContent = (content: string) => {
-    if (!content || isLoading) return content;
+const ChatMessage: React.FC<ChatMessageProps> = ({ text, sender }) => {
+  const isUser = sender === "user";
 
-    const paragraphs = content.split("\n\n");
+  const parseFormattedSections = () => {
+    const lines = text.split("\n").filter(Boolean);
+    const elements: React.ReactNode[] = [];
+    let currentSection: string | null = null;
 
-    return paragraphs.map((paragraph, pIndex) => {
-      if (paragraph.includes("\n- ") || paragraph.match(/\n\d+\./)) {
-        const lines = paragraph.split("\n");
-        const heading =
-          !lines[0].startsWith("- ") && !lines[0].match(/^\d+\./)
-            ? lines[0]
-            : null;
+    lines.forEach((line, index) => {
+      if (line.startsWith("## ")) {
+        currentSection = line.replace("## ", "").trim();
+        elements.push(
+          <h3
+            key={`section-${index}`}
+            className="mt-4 mb-2 text-lg font-semibold text-gray-700"
+          >
+            {currentSection}
+          </h3>
+        );
+      } else if (line.startsWith("**") && line.includes("**")) {
+        const nameMatch = line.match(/\*\*(.*?)\*\*/);
+        const name = nameMatch ? nameMatch[1] : "";
+        const details = line
+          .replace(/\*\*(.*?)\*\*/, "")
+          .trim()
+          .replace(/^[-–]\s*/, "");
 
-        const listItems = lines
-          .filter((line) => line.startsWith("- ") || line.match(/^\d+\./))
-          .map((line) => line.replace(/^- /, "").replace(/^\d+\.\s*/, ""));
+        // Extract extra info (Cuisine, Rating, etc.)
+        const cuisineMatch = details.match(/Cuisine:\s?(.*?)(?=\s?[-–]|$)/i);
+        const ratingMatch = details.match(/Rating:\s?(.*?)(?=\s?[-–]|$)/i);
+        const priceMatch = details.match(/Price:\s?(.*?)(?=\s?[-–]|$)/i);
+        const highlightsMatch = details.match(/[-–]\s?(.*)$/i);
 
-        return (
-          <div key={pIndex} className="mb-3">
-            {heading && <p className="font-medium mb-2">{heading}</p>}
-            <ul className="list-disc pl-5 space-y-1">
-              {listItems.map((item, idx) => (
-                <li key={idx} className="text-sm">
-                  {item}
-                </li>
-              ))}
-            </ul>
+        elements.push(
+          <div
+            key={`item-${index}`}
+            className="mb-3 p-3 border rounded-lg bg-white shadow-sm text-sm text-gray-800"
+          >
+            <div className="font-bold text-base text-blue-700">{name}</div>
+            {cuisineMatch && (
+              <div>
+                <span className="font-semibold">Cuisine:</span>{" "}
+                {cuisineMatch[1]}
+              </div>
+            )}
+            {ratingMatch && (
+              <div>
+                <span className="font-semibold">Rating:</span> ⭐{" "}
+                {ratingMatch[1]}
+              </div>
+            )}
+            {priceMatch && (
+              <div>
+                <span className="font-semibold">Price:</span> {priceMatch[1]}
+              </div>
+            )}
+            {highlightsMatch && (
+              <div>
+                <span className="font-semibold">Highlights:</span>{" "}
+                {highlightsMatch[1]}
+              </div>
+            )}
           </div>
         );
-      } else if (paragraph.startsWith("```") && paragraph.endsWith("```")) {
-        const code = paragraph.substring(3, paragraph.length - 3);
-        return (
-          <pre
-            key={pIndex}
-            className="bg-gray-800 text-gray-100 p-3 rounded-md my-2 overflow-x-auto text-sm font-mono"
+      } else if (line.startsWith("**") && !line.includes("**", 2)) {
+        // Bold text (for top-level descriptions)
+        elements.push(
+          <p
+            key={`bold-${index}`}
+            className="font-semibold text-gray-900 mt-2 mb-1"
           >
-            {code}
-          </pre>
+            {line.replace(/\*\*/g, "")}
+          </p>
         );
       } else {
-        return (
-          <p key={pIndex} className="mb-2">
-            {paragraph}
+        // Fallback for any other paragraph
+        elements.push(
+          <p key={`text-${index}`} className="text-gray-800 mb-2">
+            {line}
           </p>
         );
       }
     });
+
+    return elements;
   };
 
   return (
     <div
-      className={`flex w-full my-4 ${
-        sender === "user" ? "justify-end" : "justify-start"
+      className={`my-2 px-4 py-3 rounded-xl max-w-2xl ${
+        isUser
+          ? "bg-blue-600 text-white self-end"
+          : "bg-gray-50 text-gray-900 self-start border"
       }`}
     >
-      {/* Avatar for AI */}
-      {sender === "ai" && (
-        <div className="h-8 w-8 rounded-full bg-purple-600 flex items-center justify-center text-white text-xs mr-2 flex-shrink-0">
-          AI
-        </div>
-      )}
-
-      <div
-        className={`px-4 py-2 rounded-lg shadow-sm ${
-          sender === "user"
-            ? "bg-blue-600 text-white max-w-[80%]"
-            : "bg-white border border-gray-200 text-gray-800 max-w-[85%]"
-        }`}
-      >
-        {isLoading ? (
-          <BounceLoading />
-        ) : (
-          <div className={`${sender === "ai" ? "text-left" : ""}`}>
-            {formatContent(text)}
-          </div>
-        )}
-      </div>
-
-      {/* Avatar for user */}
-      {sender === "user" && (
-        <div className="h-8 w-8 rounded-full bg-gray-400 flex items-center justify-center text-white text-xs ml-2 flex-shrink-0">
-          You
-        </div>
-      )}
+      {parseFormattedSections()}
     </div>
   );
 };
