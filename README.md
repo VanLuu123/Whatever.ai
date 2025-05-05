@@ -1,16 +1,38 @@
-# ☕ Coffee GPT — Café Recommendation AI
+# 🍽️ Whatever.AI — Group-Friendly Food & Dessert Recommendations
 
-**Coffee GPT** is an AI-powered café recommendation assistant built with FastAPI, LangChain, and Next.js. It provides real-time, location-based coffee shop suggestions using advanced natural language models.
+**Whatever.AI** is an AI-powered chatbot designed to end indecisive group food debates. Whether you're out with friends and nobody can agree on where to eat, or you're just craving something sweet nearby — **Whatever.AI** has you covered.
+
+Built using **FastAPI**, **LangChain**, and **Next.js**, this app delivers personalized food and dessert recommendations based on real-time location and natural language input.
+
+---
+
+## 🤔 Why Whatever.AI?
+
+> _“Are you ever with a group of people and no one can decide where to eat?”_
+
+That’s the problem **Whatever.AI** solves. Just ask it, and it’ll suggest quality food or dessert spots nearby — fast, conversational, and always ready to recommend something tasty.
+
+---
 
 ## 🌟 Features
 
-- 🧠 AI-generated café recommendations tailored to user location
-- ⚡ FastAPI backend with LangChain and OpenRouter
-- 💬 Conversational UI built with Next.js and React
-- 🔄 Real-time chat experience with persistent messaging
-- 🔐 Environment-secured API access using `.env`
+- 🧠 AI-generated food & dessert spot recommendations  
+- 📍 Location-aware suggestions tailored to your query  
+- 💬 Chatbot UI for natural, conversational interaction  
+- ⚡ FastAPI + LangChain backend for intelligent processing  
+- 🔄 Real-time chat experience with persistent message history  
+- 🔐 Secure API access using environment variables  
 
 ---
+
+## 🚀 Getting Started
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/yourusername/whatever-ai.git
+cd whatever-ai
+
 
 ## 🚀 Getting Started
 
@@ -78,10 +100,11 @@ The frontend runs on `http://localhost:3000`.
 
 ## 🧠 How It Works
 
-- The user types a message (e.g., _"Find a good café in Brooklyn"_).
+- A user enters a message like:
+- “We’re in San Diego, La Jolla and want recommendations.”
 - The message is sent to the FastAPI backend via the `/recommend` endpoint.
-- LangChain + OpenRouter process the message using a system prompt tailored for location-based café discovery.
-- The AI returns personalized suggestions with real-world cafés.
+- LangChain and OpenRouter process the request using a location-aware system prompt.
+- The chatbot returns a curated list of places — whether it’s boba, tacos, churros, or all of the above.
 
 ---
 
@@ -114,9 +137,15 @@ The frontend runs on `http://localhost:3000`.
 
 ## ✨ Example Prompt
 
-> **User:** I'm in Lemon Grove, California. Got any good coffee spots?
+>User: We’re near Koreatown in LA and want dessert. Any ideas?
+>AI: Here are some sweet spots to check out near Koreatown:
 
-> **AI:** Of course! I'd be happy to help you find coffee spots in Lemon Grove, California. Here are two highly-recommended cafés: 1. **Steady State Coffee**: A popular spot in the heart of Lemon Grove, known for its welcoming atmosphere and delicious coffee. 2. **The Fresh Brew**: Located near the Lemon Grove Depot, this café offers artisanal coffee and pastries in a cozy setting. Both of these cafés are excellent choices for a great cup of coffee. Enjoy your café hopping in Lemon Grove! Let me know if you'd like more recommendations in this area or if you'd like to explore other nearby neighborhoods.
+1. Sul & Beans — Korean shaved ice desserts and toasts.
+
+2. Oakobing — Known for its bingsu and late-night vibe.
+
+> Let me know if you're in the mood for something different!
+
 
 ---
 
