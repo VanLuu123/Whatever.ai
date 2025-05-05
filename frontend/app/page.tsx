@@ -1,9 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import React, { useRef } from "react";
 import { useState, useEffect } from "react";
-import cat from "../imgs/cat_img.png";
 import { Message } from "./types";
 import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
