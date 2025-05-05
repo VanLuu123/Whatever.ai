@@ -1,11 +1,9 @@
-import os
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from langchain_logic import get_cafe_recommendation
 from pydantic import BaseModel
-from typing import List, Literal
+from typing import List
 from sse_starlette.sse import EventSourceResponse
-from database import engine 
 from database import init_db
 from contextlib import asynccontextmanager
 from routes.chats import chats_router

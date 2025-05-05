@@ -9,7 +9,7 @@ import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useChat } from "./context/ChatContext";
-import { config } from "./config"
+import { config } from "./config";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
@@ -167,8 +167,9 @@ export default function Home() {
         <div className="max-w-2xl mx-auto w-full">
           {chatMessages.length === 0 && (
             <div className="flex justify-center items-center mb-6">
-              <Image src={cat} alt="I love food!" width={100} height={100} />
-              <h1 className="text-3xl font-bold mt-4">Whatever.AI</h1>
+              <h1 className="text-3xl font-bold mt-4">
+                Hello, Need Recommendations?
+              </h1>
             </div>
           )}
           <ChatBox messages={chatMessages} />
