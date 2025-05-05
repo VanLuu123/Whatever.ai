@@ -39,7 +39,7 @@ const ChatMessage: React.FC<Message> = ({ text, sender }) => {
         return (
           <pre
             key={pIndex}
-            className="bg-gray-800 text-gray-100 p-3 rounded-md my-2 overflow-x-auto text-sm font-mono"
+            className="bg-gray-800 text-gray-100 p-2 rounded-md my-2 overflow-x-auto text-sm font-mono"
           >
             {code}
           </pre>
@@ -68,7 +68,7 @@ const ChatMessage: React.FC<Message> = ({ text, sender }) => {
       )}
 
       <div
-        className={`px-4 py-2 rounded-lg shadow-sm ${
+        className={`px-4 py-3 rounded-lg shadow-sm ${
           sender === "user"
             ? "bg-blue-600 text-white max-w-[80%]"
             : "bg-white border border-gray-200 text-gray-800 max-w-[85%]"
