@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@clerk/nextjs": "^6.19.1",
     "@microsoft/fetch-event-source": "^2.0.1",
     "autoprefixer": "^10.4.21",
     "axios": "^1.8.4",
