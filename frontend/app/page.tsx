@@ -184,13 +184,17 @@ export default function Home() {
       {showAuthModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-xl shadow-lg max-w-md text-center">
-            <h2 className="text-xl font-semibold mb-4">
-              Sign up for a better experience!
-            </h2>
+            <h2 className="text-xl font-semibold mb-4">Welcome!</h2>
             <p className="mb-6">
-              Would you like to sign up or continue as a guest?
+              Would you like to sign in, sign up, or continue as a guest?
             </p>
-            <div className="flex justify-center gap-4">
+            <div className="flex flex-col gap-3">
+              <button
+                onClick={handleSignInClick}
+                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-500"
+              >
+                Sign In
+              </button>
               <button
                 onClick={handleSignUpClick}
                 className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500"
@@ -207,6 +211,7 @@ export default function Home() {
           </div>
         </div>
       )}
+
       <div
         className={
           chatMessages.length === 0
