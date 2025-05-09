@@ -7,15 +7,9 @@ import { FaChevronRight } from "react-icons/fa6";
 import { fetchEventSource } from "@microsoft/fetch-event-source";
 import { useChat } from "./context/ChatContext";
 import { config } from "./config";
-import { useSession } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
-  const [showAuthModal, setShowAuthModal] = useState(true);
-  const { isSignedIn, isLoaded } = useSession();
-
-  const router = useRouter();
   const ref = useRef<HTMLDivElement>(null);
   const {
     chatMessages,
@@ -25,22 +19,6 @@ export default function Home() {
     sessionId,
   } = useChat();
   const currentAiMessage = useRef("");
-
-  useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      setShowAuthModal(false);
-    } else if (isLoaded && !isSignedIn) {
-      setShowAuthModal(true);
-    }
-  }, [isSignedIn, isLoaded]);
-
-  const handleSignInClick = () => {
-    router.push("/sign-in");
-  };
-
-  const handleSignUpClick = () => {
-    router.push("/sign-up");
-  };
 
   //auto scrolling feature
   useEffect(() => {
@@ -52,11 +30,6 @@ export default function Home() {
   const handleSubmit: React.FormEventHandler = async (e) => {
     e.preventDefault();
     if (!inputValue.trim() || isStreaming) return;
-
-    if (!isSignedIn) {
-      setShowAuthModal(true);
-      return;
-    }
 
     const userMessage: Message = {
       text: inputValue,
@@ -181,37 +154,6 @@ export default function Home() {
 
   return (
     <section className="flex flex-col min-h-screen text-black bg-white justify-center">
-      {showAuthModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg max-w-md text-center">
-            <h2 className="text-xl font-semibold mb-4">Welcome!</h2>
-            <p className="mb-6">
-              Would you like to sign in, sign up, or continue as a guest?
-            </p>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={handleSignInClick}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-500"
-              >
-                Sign In
-              </button>
-              <button
-                onClick={handleSignUpClick}
-                className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-500"
-              >
-                Sign Up
-              </button>
-              <button
-                onClick={() => setShowAuthModal(false)}
-                className="bg-gray-300 px-4 py-2 rounded-lg hover:bg-gray-200"
-              >
-                Continue as Guest
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div
         className={
           chatMessages.length === 0
@@ -250,13 +192,13 @@ export default function Home() {
               onChange={(e) => setInputValue(e.target.value)}
               className="w-full h-12 px-6 pr-12 rounded-full border border-gray-300 focus:outline-none bg-gray-50 text-base text-gray-700 shadow-sm"
               placeholder="Ask me anything..."
-              disabled={isStreaming || !isSignedIn}
+              disabled={isStreaming}
             />
             <button
               type="submit"
               className="absolute right-1 top-1 bg-gray-600 hover:bg-gray-500 text-white p-2.5 rounded-full focus:outline-none focus:ring-2 focus:ring-white transition-colors duration-200"
               aria-label="submit"
-              disabled={isStreaming || !isSignedIn}
+              disabled={isStreaming}
             >
               <FaChevronRight className="text-white text-lg" />
             </button>
