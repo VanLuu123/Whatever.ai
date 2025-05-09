@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useRef } from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
+import { useSession } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import { Message } from "./types";
 import ChatBox from "./components/ChatBox";
 import { FaChevronRight } from "react-icons/fa6";
@@ -11,7 +12,7 @@ import { config } from "./config";
 
 export default function Home() {
   const [inputValue, setInputValue] = useState("");
-  const ref = useRef<HTMLDivElement>(null);
+  const [showAuthModal, setShowAuthModal] = useState(true); // Initially show the modal
   const {
     chatMessages,
     setChatMessages,
@@ -19,142 +20,79 @@ export default function Home() {
     setIsStreaming,
     sessionId,
   } = useChat();
+  const { isSignedIn, isLoaded } = useSession(); // Get isLoaded from useSession
+  const router = useRouter();
+  const ref = useRef<HTMLDivElement>(null);
   const currentAiMessage = useRef("");
 
-  //auto scrolling feature
+  useEffect(() => {
+    if (isLoaded && isSignedIn) {
+      // Only hide if Clerk is loaded AND user is signed in
+      setShowAuthModal(false);
+    } else if (isLoaded && !isSignedIn) {
+      // Show modal if Clerk is loaded and NOT signed in
+      setShowAuthModal(true);
+    }
+  }, [isSignedIn, isLoaded]);
+
+  const handleSignInClick = () => {
+    router.push("/sign-in");
+  };
+
+  const handleSignUpClick = () => {
+    router.push("/sign-up");
+  };
+
+  const handleCloseModal = () => {
+    setShowAuthModal(false);
+  };
+
+  const handleSubmit: React.FormEventHandler = async (e) => {
+    e.preventDefault();
+    if (!inputValue.trim() || isStreaming) return;
+
+    if (!isSignedIn) {
+      setShowAuthModal(true); // Show auth modal if not signed in
+      return;
+    }
+
+    // ... (Your existing handleSubmit logic - backend calls, etc.)
+  };
+
   useEffect(() => {
     if (ref.current) {
       ref.current.scrollIntoView();
     }
   }, [chatMessages]);
 
-  const handleSubmit: React.FormEventHandler = async (e) => {
-    e.preventDefault();
-    if (!inputValue.trim() || isStreaming) return;
-
-    const userMessage: Message = {
-      text: inputValue,
-      sender: "user",
-    };
-
-    try {
-      await fetch(`${config.backendUrl}/chats/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          text: inputValue,
-          sender: "user",
-          session_id: sessionId,
-        }),
-      });
-      console.log("Saving User Message");
-    } catch (error) {
-      console.log("Error saving user input", error);
-    }
-
-    // Add user's message and a temporary AI "typing" message to simulate loading
-    const newMessages: Message[] = [
-      ...chatMessages,
-      { text: inputValue, sender: "user" },
-      { text: "__loading__", sender: "ai" },
-    ];
-    setChatMessages(newMessages);
-    setInputValue("");
-    setIsStreaming(true);
-    currentAiMessage.current = "";
-
-    // API POST req to send User Query to Backend
-    try {
-      await fetchEventSource(`${config.backendUrl}/recommend/`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ chatmessages: [...chatMessages, userMessage] }),
-        // checks if the SSE connection is opened and connected
-        onopen: async (response) => {
-          if (response.ok) {
-            console.log("Server Sent Event Connection Established");
-            return;
-          }
-          console.log("Server Sent Event Connection Error", response.status);
-          setIsStreaming(false);
-          throw new Error(
-            `Server Sent Event Connection Error, status ${response.status}`
-          );
-        },
-        // accepts the stream of events from backend and appends onto the AI message
-        onmessage: async (event) => {
-          if (event.data === "[DONE]") {
-            try {
-              await fetch(`${config.backendUrl}/chats/`, {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                  text: currentAiMessage.current,
-                  sender: "ai",
-                  session_id: sessionId,
-                }),
-              });
-              console.log("Saving AI Message");
-            } catch (error) {
-              console.log("Error Saving AI Message", error);
-            }
-            setIsStreaming(false);
-            return;
-          }
-          try {
-            currentAiMessage.current += event.data;
-            setChatMessages((prev) => {
-              const last = prev[prev.length - 1];
-
-              if (last.sender === "ai") {
-                return [
-                  ...prev.slice(0, -1),
-                  { ...last, text: currentAiMessage.current },
-                ];
-              } else {
-                return [
-                  ...prev,
-                  { text: currentAiMessage.current, sender: "ai" },
-                ];
-              }
-            });
-          } catch (error) {
-            console.log("Fetch on message error", error);
-          }
-        },
-        onerror(error) {
-          console.log("Server Sent Event Error", error);
-          setIsStreaming(false);
-          setChatMessages((prev) => [
-            ...prev,
-            {
-              text: "Sorry, something went wrong with the AI. 😕",
-              sender: "ai",
-            },
-          ]);
-          throw error;
-        },
-        onclose() {
-          console.log("Server Sent Event Closed.");
-          setIsStreaming(false);
-        },
-      });
-    } catch (error) {
-      console.error("Error setting up SSE:", error);
-      setIsStreaming(false);
-    } finally {
-      setIsStreaming(false); // Ensure streaming state is reset incase backend fails
-    }
-  };
-
   return (
     <section className="flex flex-col min-h-screen text-black bg-white justify-center">
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-md">
+            <h2 className="text-lg font-semibold mb-4">
+              Authentication Required
+            </h2>
+            <p className="mb-4">Please sign in or sign up to continue.</p>
+            <div className="flex justify-end">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded mr-2"
+                onClick={handleSignInClick}
+              >
+                Sign In
+              </button>
+              <button
+                className="px-4 py-2 bg-green-500 text-white rounded"
+                onClick={handleSignUpClick}
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Your chat interface */}
       <div
         className={
           chatMessages.length === 0
@@ -193,13 +131,13 @@ export default function Home() {
               onChange={(e) => setInputValue(e.target.value)}
               className="w-full h-12 px-6 pr-12 rounded-full border border-gray-300 focus:outline-none bg-gray-50 text-base text-gray-700 shadow-sm"
               placeholder="Ask me anything..."
-              disabled={isStreaming}
+              disabled={isStreaming || !isSignedIn} // Disable input if loading or not signed in
             />
             <button
               type="submit"
               className="absolute right-1 top-1 bg-gray-600 hover:bg-gray-500 text-white p-2.5 rounded-full focus:outline-none focus:ring-2 focus:ring-white transition-colors duration-200"
               aria-label="submit"
-              disabled={isStreaming}
+              disabled={isStreaming || !isSignedIn}
             >
               <FaChevronRight className="text-white text-lg" />
             </button>
