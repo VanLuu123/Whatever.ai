@@ -181,6 +181,31 @@ export default function Home() {
 
   return (
     <section className="flex flex-col min-h-screen text-black bg-white justify-center">
+      {showAuthModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+          <div className="bg-white p-6 rounded-md">
+            <h2 className="text-lg font-semibold mb-4">
+              Authentication Required
+            </h2>
+            <p className="mb-4">Please sign in or sign up to continue.</p>
+            <div className="flex justify-end">
+              <button
+                className="px-4 py-2 bg-blue-500 text-white rounded mr-2"
+                onClick={handleSignInClick} // Using handleSignInClick
+              >
+                Sign In
+              </button>
+              <button
+                className="px-4 py-2 bg-green-500 text-white rounded"
+                onClick={handleSignUpClick} // Using handleSignUpClick
+              >
+                Sign Up
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
         className={
           chatMessages.length === 0
