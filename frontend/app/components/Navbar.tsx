@@ -33,9 +33,6 @@ const Navbar = () => {
       <div className="flex items-center space-x-4">
         {isSignedIn ? (
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-gray-700 hidden md:inline">
-              {user?.firstName || user?.username}
-            </span>
             <button
               onClick={clearChat}
               className="text-gray-700 hover:text-black transition md:mr-2"
