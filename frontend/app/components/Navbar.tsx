@@ -10,7 +10,7 @@ import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 
 const Navbar = () => {
   const { clearChat } = useChat();
-  const { isSignedIn, user } = useUser();
+  const { isSignedIn} = useUser();
 
   return (
     <nav className="fixed w-full px-6 py-4 flex justify-between items-center">
