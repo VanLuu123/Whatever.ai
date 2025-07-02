@@ -3,6 +3,7 @@
 import React, { useContext, useState, createContext, useEffect } from "react";
 import { Message } from "../types";
 import { v4 as uuidv4 } from "uuid";
+import { config } from "../config";
 
 type ChatContextType = {
   chatMessages: Message[];
@@ -37,7 +38,7 @@ export function ChatProvider({ children }: { children: React.ReactNode }) {
     const loadChatHistory = async () => {
       try {
         const res = await fetch(
-          `http://localhost:8000/chats/${currentSessionId}`
+          `${config.backendUrl}/chats/${currentSessionId}`
         );
         if (res.ok) {
           const messages = await res.json();
